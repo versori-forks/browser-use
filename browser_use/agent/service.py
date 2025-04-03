@@ -9,36 +9,49 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Dict, Generic, List, Optional, TypeVar, Union
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+    Union,
+)
 
 from dotenv import load_dotenv
 from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.messages import (
-	BaseMessage,
-	HumanMessage,
-	SystemMessage,
-)
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 
 # from lmnr.sdk.decorators import observe
 from pydantic import BaseModel, ValidationError
 
 from browser_use.agent.gif import create_history_gif
 from browser_use.agent.memory.service import Memory, MemorySettings
-from browser_use.agent.message_manager.service import MessageManager, MessageManagerSettings
-from browser_use.agent.message_manager.utils import convert_input_messages, extract_json_from_model_output, save_conversation
+from browser_use.agent.message_manager.service import (
+    MessageManager,
+    MessageManagerSettings,
+)
+from browser_use.agent.message_manager.utils import (
+    convert_input_messages,
+    extract_json_from_model_output,
+    save_conversation,
+)
 from browser_use.agent.prompts import AgentMessagePrompt, PlannerPrompt, SystemPrompt
 from browser_use.agent.views import (
-	REQUIRED_LLM_API_ENV_VARS,
-	ActionResult,
-	AgentError,
-	AgentHistory,
-	AgentHistoryList,
-	AgentOutput,
-	AgentSettings,
-	AgentState,
-	AgentStepInfo,
-	StepMetadata,
-	ToolCallingMethod,
+    REQUIRED_LLM_API_ENV_VARS,
+    ActionResult,
+    AgentError,
+    AgentHistory,
+    AgentHistoryList,
+    AgentOutput,
+    AgentSettings,
+    AgentState,
+    AgentStepInfo,
+    StepMetadata,
+    ToolCallingMethod,
 )
 from browser_use.browser.browser import Browser
 from browser_use.browser.context import BrowserContext
@@ -46,17 +59,21 @@ from browser_use.browser.views import BrowserState, BrowserStateHistory
 from browser_use.controller.registry.views import ActionModel
 from browser_use.controller.service import Controller
 from browser_use.dom.history_tree_processor.service import (
-	DOMHistoryElement,
-	HistoryTreeProcessor,
+    DOMHistoryElement,
+    HistoryTreeProcessor,
 )
 from browser_use.exceptions import LLMException
 from browser_use.telemetry.service import ProductTelemetry
 from browser_use.telemetry.views import (
-	AgentEndTelemetryEvent,
-	AgentRunTelemetryEvent,
-	AgentStepTelemetryEvent,
+    AgentEndTelemetryEvent,
+    AgentRunTelemetryEvent,
+    AgentStepTelemetryEvent,
 )
-from browser_use.utils import check_env_variables, time_execution_async, time_execution_sync
+from browser_use.utils import (
+    check_env_variables,
+    time_execution_async,
+    time_execution_sync,
+)
 
 load_dotenv()
 logger = logging.getLogger(__name__)
@@ -489,6 +506,8 @@ class Agent(Generic[Context]):
 
 			if len(result) > 0 and result[-1].is_done:
 				logger.info(f'📄 Result: {result[-1].extracted_content}')
+				with open('result_report.txt', 'w') as f:
+					f.write(result[-1].extracted_content or "")
 
 			self.state.consecutive_failures = 0
 
@@ -776,7 +795,6 @@ class Agent(Generic[Context]):
 			if self.initial_actions:
 				result = await self.multi_act(self.initial_actions, check_for_new_elements=False)
 				self.state.last_result = result
-
 			for step in range(max_steps):
 				# Check if waiting for user input after Ctrl+C
 				if self.state.paused:
