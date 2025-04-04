@@ -4,6 +4,7 @@ import json
 import pytest
 
 from browser_use.data_pipeline.data_pipeline import (
+    Cabin,
     CabinInformation,
     DataPipeline,
     PassengerInformation,
@@ -17,7 +18,7 @@ class TestDataPipeline:
         # Arrange
         with open("tests/unit/data/synthetic_data.json", "r") as f:
             json_data = json.load(f)
-        data_pipeline = DataPipeline()
+        data_pipeline = DataPipeline(json_data)
         expected_prompt = """1. Navigate and login:
     - Navigate to https://sandbox.reservations.travelhx.com/touch
     - Login using user name VR_Patrick and password SEAWARE_PASSWORD. Once logged in, it will say 'Logged in as: VR_Patrick' at the top of the screen
@@ -48,7 +49,7 @@ class TestDataPipeline:
 """
 
         # Act
-        prompt = data_pipeline.create_prompt_from_reservation_data(json_data)
+        prompt = data_pipeline.create_prompt_from_reservation_data()
         with open("tests/unit/data/expected_prompt.txt", "w") as f:
             f.write(prompt)
 
@@ -62,11 +63,11 @@ class TestDataPipeline:
         with open("tests/unit/data/synthetic_data.json", "r") as f:
             json_data = json.load(f)
         
-        data_pipeline = DataPipeline()
+        data_pipeline = DataPipeline(json_data)
         expected_date = datetime.datetime(2028, 3, 18, 0, 0)
 
         # Act
-        date = data_pipeline.extract_start_date_from_reservation_data(json_data)
+        date = data_pipeline.extract_start_date_from_reservation_data()
 
         # Assert
         assert date == expected_date
@@ -78,7 +79,7 @@ class TestDataPipeline:
         with open("tests/unit/data/synthetic_data.json", "r") as f:
             json_data = json.load(f)
 
-        data_pipeline = DataPipeline()
+        data_pipeline = DataPipeline(json_data)
         expected_cabin_information = [
             CabinInformation(
                 cabin_number="336",
@@ -88,7 +89,7 @@ class TestDataPipeline:
         ]
 
         # Act
-        cabin_information = data_pipeline.extract_cabin_information_from_reservation_data(json_data)
+        cabin_information = data_pipeline.extract_cabin_information_from_reservation_data()
 
         # Assert
         assert cabin_information == expected_cabin_information
@@ -100,7 +101,7 @@ class TestDataPipeline:
         with open("tests/unit/data/synthetic_data.json", "r") as f:
             json_data = json.load(f)
             
-        data_pipeline = DataPipeline()
+        data_pipeline = DataPipeline(json_data)
         expected_passenger_information = [
             PassengerInformation(
                 passenger_name="FREDI KRUGER",
@@ -113,7 +114,7 @@ class TestDataPipeline:
         ]
 
         # Act
-        passenger_information = data_pipeline.extract_passenger_information_from_reservation_data(json_data)
+        passenger_information = data_pipeline.extract_passenger_information_from_reservation_data()
 
         # Assert
         assert passenger_information == expected_passenger_information
@@ -126,7 +127,7 @@ class TestDataPipeline:
         with open("tests/unit/data/reservation_different_cabings.json", "r") as f:
             json_data = json.load(f)
             
-        data_pipeline = DataPipeline()
+        data_pipeline = DataPipeline(json_data)
         expected_prompt = """1. Navigate and login:
     - Navigate to https://sandbox.reservations.travelhx.com/touch
     - Login using user name VR_Patrick and password SEAWARE_PASSWORD. Once logged in, it will say 'Logged in as: VR_Patrick' at the top of the screen
@@ -169,7 +170,7 @@ class TestDataPipeline:
 """
 
         # Act
-        prompt = data_pipeline.create_prompt_from_reservation_data(json_data)
+        prompt = data_pipeline.create_prompt_from_reservation_data()
         with open("tests/unit/data/expected_prompt_different_cabins.txt", "w") as f:
             f.write(prompt)
 
@@ -232,7 +233,11 @@ class TestDataPipeline:
     def test_get_unique_cabins(self, input_cabins, expected_unique_cabins, test_description):
         """Test the _get_unique_cabins method with various scenarios."""
         # Arrange
-        data_pipeline = DataPipeline()
+        with open("tests/unit/data/reservation_different_cabings.json", "r") as f:
+            json_data = json.load(f)
+        data_pipeline = DataPipeline(json_data)
+
+        input_cabins = [Cabin(**cabin) for cabin in input_cabins]
         
         # Act
         result = data_pipeline._get_unique_cabins(input_cabins)
@@ -241,11 +246,11 @@ class TestDataPipeline:
         assert len(result) == len(expected_unique_cabins), f"Expected {len(expected_unique_cabins)} unique cabins, got {len(result)}"
         
         # Check that each expected cabin is in the result
-        for expected_cabin in expected_unique_cabins:
+        for expected_cabin in input_cabins:
             found = False
             for result_cabin in result:
-                if (result_cabin["category"] == expected_cabin["category"] and 
-                    result_cabin["cabinNumber"] == expected_cabin["cabinNumber"]):
+                if (result_cabin.category == expected_cabin.category and 
+                    result_cabin.cabin_number == expected_cabin.cabin_number):
                     found = True
                     break
             assert found, f"Expected cabin {expected_cabin} not found in result"
