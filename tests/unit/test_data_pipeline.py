@@ -21,17 +21,18 @@ class TestDataPipeline:
         data_pipeline = DataPipeline(json_data)
         expected_prompt = """1. Navigate and login:
     - Navigate to https://sandbox.reservations.travelhx.com/touch
-    - Login using user name VR_Patrick and password SEAWARE_PASSWORD. Once logged in, it will say 'Logged in as: VR_Patrick' at the top of the screen
+    - Login using user name VR_Patrick and password SEAWARE_PASSWORD.
 2. Creating new reservation and finding the correct tour:
     - Click New Reservation at bottom of screen
+    - Wait 5 seconds for the page to load
     - Click on element by index with id 13
     - In the calendar under "Select the tour you prefer from the list below", click on the second year dropdown where it says 2025 and click on 2028 using the select_dropdown_option function
     - In the dropdown for month, using the select_dropdown_option function, click on the month where it says March
     - Wait 5 seconds for the page to load
-    - Click on the tile on the day 18 of the month. It should be highlighted in blue once selected
+    - Click on the tile on the day 18 of the month. It should be highlighted in blue
     - Check the tour is on the correct Tour Start date 18 Mar 2028. Repeat this check until the tour is on the correct date. It is CRITICAL that the tour is on the correct date. Click on the tile with the day 18 if it isn't on the correct date.
     - Find the select checkbox and click on it if it is not already selected. It should be in the bottom right of the screen (below the cost). A green tick should appear once selected
-    - Click continue
+    - Only click continue once the green tick is visible
 3. Selecting the correct cabin:
     - Use extract_content with goal "Find the cabin with code N2 in the list of available cabins and identify its row index."
     - Click on the plus button for the cabin with code N2
@@ -46,6 +47,19 @@ class TestDataPipeline:
     - Click the select button select the cabin 336
     - Verify that the cabin number is 336 is selected 
     - Click accept
+    - Click continue
+    - Click Continue
+4. Adding the Passengers Information:
+    - Click Find Guest
+    - Enter the passenger's email address test@test.com
+    - Find the passenger with name FREDI KRUGER and click the check box next to their name
+    - Once selected, click OK
+    - Click next to add the next passenger or Save & Continue if there are no more passengers to add
+    - Click Find Guest
+    - Enter the passenger's email address test.fr@icloud.com
+    - Find the passenger with name TEST JEAN PIERRE LAFFONT and click the check box next to their name
+    - Once selected, click OK
+    - Click next to add the next passenger or Save & Continue if there are no more passengers to add
 """
 
         # Act
@@ -130,17 +144,18 @@ class TestDataPipeline:
         data_pipeline = DataPipeline(json_data)
         expected_prompt = """1. Navigate and login:
     - Navigate to https://sandbox.reservations.travelhx.com/touch
-    - Login using user name VR_Patrick and password SEAWARE_PASSWORD. Once logged in, it will say 'Logged in as: VR_Patrick' at the top of the screen
+    - Login using user name VR_Patrick and password SEAWARE_PASSWORD.
 2. Creating new reservation and finding the correct tour:
     - Click New Reservation at bottom of screen
+    - Wait 5 seconds for the page to load
     - Click on element by index with id 13
     - In the calendar under "Select the tour you prefer from the list below", click on the second year dropdown where it says 2025 and click on 2028 using the select_dropdown_option function
     - In the dropdown for month, using the select_dropdown_option function, click on the month where it says March
     - Wait 5 seconds for the page to load
-    - Click on the tile on the day 18 of the month. It should be highlighted in blue once selected
+    - Click on the tile on the day 18 of the month. It should be highlighted in blue
     - Check the tour is on the correct Tour Start date 18 Mar 2028. Repeat this check until the tour is on the correct date. It is CRITICAL that the tour is on the correct date. Click on the tile with the day 18 if it isn't on the correct date.
     - Find the select checkbox and click on it if it is not already selected. It should be in the bottom right of the screen (below the cost). A green tick should appear once selected
-    - Click continue
+    - Only click continue once the green tick is visible
 3. Selecting the correct cabin:
     - Use extract_content with goal "Find the cabin with code N2 in the list of available cabins and identify its row index."
     - Click on the plus button for the cabin with code N2
@@ -167,6 +182,19 @@ class TestDataPipeline:
     - Click the select button select the cabin 528
     - Verify that the cabin number is 528 is selected 
     - Click accept
+    - Click continue
+    - Click Continue
+4. Adding the Passengers Information:
+    - Click Find Guest
+    - Enter the passenger's email address test@test.com
+    - Find the passenger with name FREDI KRUGER and click the check box next to their name
+    - Once selected, click OK
+    - Click next to add the next passenger or Save & Continue if there are no more passengers to add
+    - Click Find Guest
+    - Enter the passenger's email address test.fr@icloud.com
+    - Find the passenger with name TEST JEAN PIERRE LAFFONT and click the check box next to their name
+    - Once selected, click OK
+    - Click next to add the next passenger or Save & Continue if there are no more passengers to add
 """
 
         # Act
